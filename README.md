@@ -23,7 +23,7 @@ Provide a more Dart-ish interface for Keycloak JS Adapter.
    abstract class KeycloakInstance<TPromise extends dynamic /*'native'|dynamic*/> {
    ```
 
-   1. It mistakenly thought there was a Keycloak namespace in the keycloak.js, but there isn't. It result in calling all JS functions with a Keycloak namespace in front e.g. `Keycloak.Keycloak()`. To fix it, replace the first line
+   2. It mistakenly thought there was a Keycloak namespace in the keycloak.js, but there isn't. It result in calling all JS functions with a Keycloak namespace in front e.g. `Keycloak.Keycloak()`. To fix it, replace the first line
 
    ```'dart'
    @JS("Keycloak")
