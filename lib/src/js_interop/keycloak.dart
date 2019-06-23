@@ -1,4 +1,4 @@
-@JS("Keycloak")
+@JS()
 library keycloak;
 
 import "package:js/js.dart";
