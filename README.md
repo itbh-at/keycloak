@@ -9,7 +9,7 @@ Provide a more Dart-ish interface for Keycloak JS Adapter.
 1. Must have [js_facade_gen](https://github.com/dart-lang/js_facade_gen?) installed.
 2. Go into `/bin` folder and execute `generate_js_interop.sh`:
    - This script assumed you have [keycloak repository](https://github.com/keycloak/keycloak) cloned locally alongside this project's folder.
-3. There will be syntax error after the generation (the generator is old and lack of maintainence):
+3. There will be syntax error after the generation (the generator is old and lack of maintenance):
 
    1. It mistakenly generate syntax error at ln 316:
 
@@ -41,7 +41,7 @@ Provide a more Dart-ish interface for Keycloak JS Adapter.
 
 All tests assumes:
 
-- A local Keycloak server running at http://localhost:8080.
+- A local Keycloak server running at `http://localhost:8080`.
 - A 'demo' realm setup.
 - 2 clients:
   1. test_alpha
