@@ -1,0 +1,7 @@
+timeout: 3s
+
+# Noisy
+chain_stack_traces: true
+
+platforms:
+  - chrome

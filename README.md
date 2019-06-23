@@ -11,7 +11,7 @@ Provide a more Dart-ish interface for Keycloak JS Adapter.
    - This script assumed you have [keycloak repository](https://github.com/keycloak/keycloak) cloned locally alongside this project's folder.
 3. There will be syntax error after the generation (the generator is old and lack of maintainence):
 
-   1. It mistakenly generate this at ln 316:
+   1. It mistakenly generate syntax error at ln 316:
 
    ```'dart'
    abstract class KeycloakInstance<TPromise extends dynamic /*'native'|dynamic*/, undefined> {
@@ -34,3 +34,19 @@ Provide a more Dart-ish interface for Keycloak JS Adapter.
    ```'dart'
    @JS()
    ```
+
+## Testing
+
+### Setup
+
+All tests assumes:
+
+- A local Keycloak server running at http://localhost:8080.
+- A 'demo' realm setup.
+- 2 clients:
+  1. test_alpha
+  2. test_beta
+
+### Run
+
+Just run command `pub run build_runner test`.
