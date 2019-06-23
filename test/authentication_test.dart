@@ -6,7 +6,7 @@ import 'package:keycloak_dart/keycloak.dart';
 void main() {
   group('Initialization.', () {
     test('Create keycloak instance by config file', () async {
-      final client = KeycloakClient();
+      final client = KeycloakInstance();
       await client.init(KeycloakInitOptions());
 
       expect(client.realm, 'demo');

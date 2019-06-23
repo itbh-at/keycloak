@@ -1,4 +1,4 @@
 library keycloak.dart;
 
-export 'src/js_interop/keycloak.dart';
-export 'src/keycloak_client.dart';
+export 'src/js_interop/keycloak.dart' hide KeycloakInstance;
+export 'src/keycloak_instance.dart';
