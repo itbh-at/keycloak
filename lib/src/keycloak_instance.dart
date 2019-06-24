@@ -102,9 +102,9 @@ class KeycloakInstance {
   /// Called to initialize the adapter.
   Future<bool> init(js.KeycloakInitOptions options) async {
     // If user define a `promiseType` and it is not 'native'
-    if (options.promiseType != 'native' ?? false) {
-      throw ArgumentError.value(
-          options.promiseType, "We only support 'native' promiseType");
+    if (options.promiseType != null && options.promiseType != 'native') {
+      throw ArgumentError.value(options.promiseType,
+          "We only support 'native' promiseType, given ${options.promiseType}");
     }
 
     // Forced native Promise in order to use our `Promise` interop
