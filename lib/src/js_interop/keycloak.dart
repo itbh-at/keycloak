@@ -414,29 +414,36 @@ abstract class KeycloakInstance<
   external set userInfo(dynamic /*{}*/ v);
 
   /// Called when the adapter is initialized.
-  external void onReady([bool authenticated]);
+  //external void onReady([bool authenticated]);
+  external set onReady(dynamic func);
 
   /// Called when a user is successfully authenticated.
-  external void onAuthSuccess();
+  //external void onAuthSuccess();
+  external set onAuthSuccess(dynamic func);
 
   /// Called if there was an error during authentication.
-  external void onAuthError(KeycloakError errorData);
+  //external void onAuthError(KeycloakError errorData);
+  external set onAuthError(dynamic func);
 
   /// Called when the token is refreshed.
-  external void onAuthRefreshSuccess();
+  //external void onAuthRefreshSuccess();
+  external set onAuthRefreshSuccess(dynamic func);
 
   /// Called if there was an error while trying to refresh the token.
-  external void onAuthRefreshError();
+  //external void onAuthRefreshError();
+  external set onAuthRefreshError(dynamic func);
 
   /// Called if the user is logged out (will only be called if the session
   /// status iframe is enabled, or in Cordova mode).
-  external void onAuthLogout();
+  //external void onAuthLogout();
+  external set onAuthLogout(dynamic func);
 
   /// Called when the access token is expired. If a refresh token is available
   /// the token can be refreshed with Keycloak#updateToken, or in cases where
   /// it's not (ie. with implicit flow) you can redirect to login screen to
   /// obtain a new access token.
-  external void onTokenExpired();
+  //external void onTokenExpired();
+  external set onTokenExpired(dynamic func);
 
   /// Called to initialize the adapter.
   external TPromise init(KeycloakInitOptions initOptions);

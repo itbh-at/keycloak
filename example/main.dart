@@ -61,6 +61,18 @@ void _highlightFlow(String flowName) {
 
 void _startUp([String flow]) async {
   final keycloak = KeycloakInstance();
+
+  // Register callback and print out in the console
+  keycloak.onReady = ([bool authenticate]) => print('on ready $authenticate');
+  keycloak.onAuthSuccess = () => print('on auth success');
+  keycloak.onAuthError =
+      ([KeycloakError error]) => print('on auth error: ${error.error}');
+  keycloak.onAuthRefreshSuccess = () => print('on auth refresh success');
+  keycloak.onAuthRefreshError = () => print('on auth refresh error');
+  keycloak.onAuthLogout = () => print('on logout');
+  keycloak.onTokenExpired = () => print('on token expired');
+
+  // Init Keycloak
   bool initSuccess = false;
   try {
     initSuccess = await keycloak.init(KeycloakInitOptions(

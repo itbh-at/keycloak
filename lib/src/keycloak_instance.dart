@@ -1,7 +1,11 @@
 import 'dart:convert' show json;
 
+import 'package:js/js.dart';
+
 import 'js_interop/keycloak.dart' as js;
 import 'js_interop/promise.dart';
+
+typedef void Func();
 
 class KeycloakInstance {
   js.KeycloakInstance<Promise> _kc;
@@ -95,7 +99,31 @@ class KeycloakInstance {
   get userInfo => _kc.userInfo;
   set userInfo(v) => _kc.userInfo = v;
 
-  //TODO: There are a bunch of event functions not implemented
+  /// Called when the adapter is initialized.
+  set onReady(Func f) => _kc.onReady = allowInterop(f);
+
+  /// Called when a user is successfully authenticated.
+  set onAuthSuccess(Func f) => _kc.onAuthSuccess = allowInterop(f);
+
+  /// Called if there was an error during authentication.
+  set onAuthError(Func f) => _kc.onAuthError = allowInterop(f);
+
+  /// Called when the token is refreshed.
+  set onAuthRefreshSuccess(Func f) =>
+      _kc.onAuthRefreshSuccess = allowInterop(f);
+
+  /// Called if there was an error while trying to refresh the token.
+  set onAuthRefreshError(Func f) => _kc.onAuthRefreshError = allowInterop(f);
+
+  /// Called if the user is logged out (will only be called if the session
+  /// status iframe is enabled, or in Cordova mode).
+  set onAuthLogout(Func f) => _kc.onAuthLogout = allowInterop(f);
+
+  /// Called when the access token is expired. If a refresh token is available
+  /// the token can be refreshed with Keycloak#updateToken, or in cases where
+  /// it's not (ie. with implicit flow) you can redirect to login screen to
+  /// obtain a new access token.
+  set onTokenExpired(Func f) => _kc.onTokenExpired = allowInterop(f);
 
   KeycloakInstance([config]) {
     _kc = js.Keycloak(config);
