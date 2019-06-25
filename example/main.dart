@@ -14,6 +14,7 @@ void main() async {
 }
 
 void _handleLoginRequiredCheck() {
+  // Acquire the saved decision about using 'login-required'
   loginRequired =
       window.localStorage['login-required'] == 'true' ? true : false ?? false;
 
@@ -29,20 +30,33 @@ void _handleNavigation(String hash) {
   if (hash.isEmpty) {
     _startUp();
   } else {
+    // A special handling of URL hash to make sure we use the correct `KeycloakInitOption` after
+    // redirected back from login page.
     var flowName = RegExp(r'^#\w*').stringMatch(hash);
     switch (flowName) {
       case '#standard':
       case '#implicit':
       case '#hybrid':
+        _highlightFlow(flowName);
         flowName = flowName.substring(1);
         break;
       default:
         flowName = null;
         break;
     }
-    print('going to $flowName');
+
     _startUp(flowName);
   }
+}
+
+void _highlightFlow(String flowName) {
+  final anchors = querySelectorAll('.activeLink');
+  for (var anchor in anchors) {
+    anchor.className = 'flowLink';
+  }
+
+  final activeAnchor = querySelector(flowName) as AnchorElement;
+  activeAnchor.className = 'activeLink';
 }
 
 void _startUp([String flow]) async {
@@ -56,6 +70,7 @@ void _startUp([String flow]) async {
     return;
   }
 
+  // Checking `keycloak.authenticated` achieved the same thing here.
   if (initSuccess) {
     _userSection(keycloak);
   } else {
@@ -68,6 +83,7 @@ void _loginSection(KeycloakInstance keycloak) {
   (querySelector('#button2') as ButtonElement).hidden = true;
   (querySelector('#button3') as ButtonElement).hidden = true;
 
+  // Login Button
   loginButton.text = 'Login';
   loginButton.onClick.listen((event) async {
     await keycloak.login();
@@ -84,23 +100,14 @@ void _loginSection(KeycloakInstance keycloak) {
 }
 
 void _userSection(KeycloakInstance keycloak) {
-  String currentSituation = '''
-    <h3>${keycloak.flow} Flow: Authenticated! </h3>
-    <strong>idToken:</strong> ${keycloak.idToken} <br>
-    <strong>token:</strong> ${keycloak.token} <br>
-    <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
-    ''';
-
-  querySelector('#output').innerHtml = currentSituation;
-
   final profileButton = querySelector('#button1') as ButtonElement;
-  final refreshButton = querySelector('#button2') as ButtonElement;
+  final updateButton = querySelector('#button2') as ButtonElement;
   final logoutButton = querySelector('#button3') as ButtonElement;
 
-  profileButton.text = 'Show Profile';
-  refreshButton.text = 'Refresh Token';
   logoutButton.text = 'Logout';
 
+  // Show Profile Button
+  profileButton.text = 'Show Profile';
   profileButton.onClick.listen((event) async {
     try {
       final profile = await keycloak.loadUserProfile();
@@ -118,28 +125,20 @@ void _userSection(KeycloakInstance keycloak) {
     }
   });
 
+  // Update Token Button
+  updateButton.text = 'Refresh Token';
   if (keycloak.flow == 'implicit') {
-    refreshButton.disabled = true;
+    updateButton.disabled = true;
   }
-  refreshButton.onClick.listen((event) {
+  updateButton.onClick.listen((event) {
     keycloak.updateToken(55).then((success) {
-      String currentSituation;
       if (success) {
-        currentSituation = '''
-            <h3>${keycloak.flow} Flow: Token Refreshed! </h3>
-            <strong>idToken:</strong> ${keycloak.idToken} <br>
-            <strong>token:</strong> ${keycloak.token} <br>
-            <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
-            ''';
+        _displayAuthenticatedInfo(
+            keycloak, "${keycloak.flow} Flow: Token Refreshed!");
       } else {
-        currentSituation = '''
-            <h3>${keycloak.flow} Flow: Token hasn't expired! </h3>
-            <strong>idToken:</strong> ${keycloak.idToken} <br>
-            <strong>token:</strong> ${keycloak.token} <br>
-            <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
-            ''';
+        _displayAuthenticatedInfo(
+            keycloak, "${keycloak.flow} Flow: Token hasn't expired!");
       }
-      querySelector('#output').innerHtml = currentSituation;
     }).catchError((e) {
       if (e is KeycloakError) {
         _errorPage(e);
@@ -147,9 +146,31 @@ void _userSection(KeycloakInstance keycloak) {
     });
   });
 
+  // Logout Button
   logoutButton.onClick.listen((event) async {
     await keycloak.logout();
   });
+
+  _displayAuthenticatedInfo(keycloak, "${keycloak.flow} Flow: Authenticated!");
+}
+
+void _displayAuthenticatedInfo(KeycloakInstance keycloak, String header) {
+  final currentSituation = '''
+    <h3>$header</h3>
+    <strong>idToken:</strong> ${_ellipsi(keycloak.idToken)} <br>
+    <strong>token:</strong> ${_ellipsi(keycloak.token)} <br>
+    <strong>refreshToken:</strong> ${_ellipsi(keycloak.refreshToken)} <br>
+    <strong>roles:</strong> ${keycloak.realmAccess.roles} <br>
+    ''';
+
+  querySelector('#output').innerHtml = currentSituation;
+}
+
+String _ellipsi(String s) {
+  if (s?.isNotEmpty ?? false) {
+    return s.replaceRange(0, s.length - 10, '...');
+  }
+  return s;
 }
 
 void _errorPage(KeycloakError error) {
