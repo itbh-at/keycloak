@@ -86,13 +86,30 @@ void _userSection(KeycloakInstance keycloak) {
   refreshButton.text = 'Refresh Token';
   logoutButton.text = 'Logout';
 
+  profileButton.onClick.listen((event) async {
+    try {
+      final profile = await keycloak.loadUserProfile();
+      String profileText = '''
+      <h4>${profile.username}'s Profile</h4>
+      <strong>Name:</strong> ${profile.firstName} ${profile.lastName}<br>
+      <strong>Email:</strong> ${profile.email}<br>
+      <strong>Created on:</strong> ${profile.createdTimestamp}<br>
+    ''';
+
+      querySelector('#profile').innerHtml = profileText;
+    } on KeycloakError catch (e) {
+      _errorPage(e);
+      return;
+    }
+  });
+
   logoutButton.onClick.listen((event) async {
     await keycloak.logout();
   });
 
   String currentSituation = '''
     <h3>${keycloak.flow} Flow: Authenticated! </h3>
-    <strong>flow:</strong> ${keycloak.flow} <br>
+    <strong>idToken:</strong> ${keycloak.idToken} <br>
     <strong>token:</strong> ${keycloak.token} <br>
     <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
     ''';

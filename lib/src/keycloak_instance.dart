@@ -181,7 +181,7 @@ class KeycloakInstance {
 
   /// Loads the user's profile.
   Future<js.KeycloakProfile> loadUserProfile() =>
-      promiseToFuture(_kc.loadUserInfo());
+      promiseToFuture(_kc.loadUserProfile());
 
   /// @private Undocumented.
   Future loadUserInfo() => promiseToFuture(_kc.loadUserInfo());
