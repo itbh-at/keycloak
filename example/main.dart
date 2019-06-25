@@ -29,10 +29,18 @@ void _handleNavigation(String hash) {
   if (hash.isEmpty) {
     _startUp();
   } else {
-    var flowName = RegExp(r'^#\w*&').stringMatch(hash);
-    if (flowName != null) {
-      flowName = flowName.substring(1, flowName.length - 1);
+    var flowName = RegExp(r'^#\w*').stringMatch(hash);
+    switch (flowName) {
+      case '#standard':
+      case '#implicit':
+      case '#hybrid':
+        flowName = flowName.substring(1);
+        break;
+      default:
+        flowName = null;
+        break;
     }
+    print('going to $flowName');
     _startUp(flowName);
   }
 }
@@ -76,6 +84,15 @@ void _loginSection(KeycloakInstance keycloak) {
 }
 
 void _userSection(KeycloakInstance keycloak) {
+  String currentSituation = '''
+    <h3>${keycloak.flow} Flow: Authenticated! </h3>
+    <strong>idToken:</strong> ${keycloak.idToken} <br>
+    <strong>token:</strong> ${keycloak.token} <br>
+    <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
+    ''';
+
+  querySelector('#output').innerHtml = currentSituation;
+
   final profileButton = querySelector('#button1') as ButtonElement;
   final refreshButton = querySelector('#button2') as ButtonElement;
   final logoutButton = querySelector('#button3') as ButtonElement;
@@ -101,26 +118,38 @@ void _userSection(KeycloakInstance keycloak) {
     }
   });
 
+  if (keycloak.flow == 'implicit') {
+    refreshButton.disabled = true;
+  }
   refreshButton.onClick.listen((event) {
     keycloak.updateToken(55).then((success) {
-      print('tokenRefreshed $success');
-    }).catchError((KeycloakError e) {
-      _errorPage(e);
+      String currentSituation;
+      if (success) {
+        currentSituation = '''
+            <h3>${keycloak.flow} Flow: Token Refreshed! </h3>
+            <strong>idToken:</strong> ${keycloak.idToken} <br>
+            <strong>token:</strong> ${keycloak.token} <br>
+            <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
+            ''';
+      } else {
+        currentSituation = '''
+            <h3>${keycloak.flow} Flow: Token hasn't expired! </h3>
+            <strong>idToken:</strong> ${keycloak.idToken} <br>
+            <strong>token:</strong> ${keycloak.token} <br>
+            <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
+            ''';
+      }
+      querySelector('#output').innerHtml = currentSituation;
+    }).catchError((e) {
+      if (e is KeycloakError) {
+        _errorPage(e);
+      }
     });
   });
 
   logoutButton.onClick.listen((event) async {
     await keycloak.logout();
   });
-
-  String currentSituation = '''
-    <h3>${keycloak.flow} Flow: Authenticated! </h3>
-    <strong>idToken:</strong> ${keycloak.idToken} <br>
-    <strong>token:</strong> ${keycloak.token} <br>
-    <strong>refreshToken:</strong> ${keycloak.refreshToken} <br>
-    ''';
-
-  querySelector('#output').innerHtml = currentSituation;
 }
 
 void _errorPage(KeycloakError error) {
