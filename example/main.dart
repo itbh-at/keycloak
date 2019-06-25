@@ -8,7 +8,6 @@ void main() async {
   _handleLoginRequiredCheck();
 
   _handleNavigation(window.location.hash);
-
   window.onHashChange.listen((event) {
     _handleNavigation(window.location.hash);
   });
@@ -27,14 +26,13 @@ void _handleLoginRequiredCheck() {
 }
 
 void _handleNavigation(String hash) {
-  print('what hash $hash');
   if (hash.isEmpty) {
     _startUp();
   } else {
-    final startOfParam = hash.indexOf('&');
-    final flowName =
-        hash.substring(1, startOfParam == -1 ? null : startOfParam);
-
+    var flowName = RegExp(r'^#\w*&').stringMatch(hash);
+    if (flowName != null) {
+      flowName = flowName.substring(1, flowName.length - 1);
+    }
     _startUp(flowName);
   }
 }
@@ -103,6 +101,14 @@ void _userSection(KeycloakInstance keycloak) {
     }
   });
 
+  refreshButton.onClick.listen((event) {
+    keycloak.updateToken(55).then((success) {
+      print('tokenRefreshed $success');
+    }).catchError((KeycloakError e) {
+      _errorPage(e);
+    });
+  });
+
   logoutButton.onClick.listen((event) async {
     await keycloak.logout();
   });
@@ -117,6 +123,6 @@ void _userSection(KeycloakInstance keycloak) {
   querySelector('#output').innerHtml = currentSituation;
 }
 
-void _errorPage(KeycloakError error) async {
+void _errorPage(KeycloakError error) {
   querySelector('#error').text = 'Keycloack Error: ${error.error}';
 }
