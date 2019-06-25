@@ -8,6 +8,9 @@ import 'package:js/js.dart' show allowInterop, JS;
 typedef void ResolveFn<T>(T value);
 typedef void RejectFn(dynamic error);
 
+@JS("JSON.parse")
+external dynamic parse(obj);
+
 @JS('Promise')
 class Promise<T> extends Thenable<T> {
   external Promise(void callback(ResolveFn<T> resolveFn, RejectFn rejectFn));

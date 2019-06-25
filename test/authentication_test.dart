@@ -6,39 +6,42 @@ import 'package:keycloak_dart/keycloak.dart';
 void main() {
   group('Initialization.', () {
     test('Create keycloak instance by config file', () async {
-      final client = KeycloakInstance();
+      final client = KeycloakInstance('keycloak.json');
       await client.init(KeycloakInitOptions());
 
       expect(client.realm, 'demo');
       expect(client.clientId, 'test_alpha');
     });
 
-    // test('Create keycloak instance by parameters', () async {
-    //   final service = KeycloakService.parameters({
-    //     "realm": "demo",
-    //     "authServerUrl": "http://localhost:8080/auth",
-    //     "clientId": "angulardart_beta"
-    //   });
-    //   await service.init();
+    test('Create keycloak instance by parameters', () async {
+      final service = KeycloakInstance.parameters({
+        "realm": "demo",
+        "authServerUrl": "http://localhost:8080/auth",
+        "clientId": "test_beta"
+      });
+      await service.init(KeycloakInitOptions());
 
-    //   expect(service.realm, 'demo');
-    //   expect(service.clientId, 'angulardart_beta');
-    // });
+      expect(service.realm, 'demo');
+      expect(service.clientId, 'test_beta');
+    });
 
-    // test('Create 2 separated instances', () async {
-    //   final serviceAlpha = KeycloakService();
-    //   final serviceBeta = KeycloakService.parameters({
-    //     "realm": "demo",
-    //     "authServerUrl": "http://localhost:8080/auth",
-    //     "clientId": "angulardart_beta"
-    //   });
+    test('Create 2 separated instances', () async {
+      final serviceAlpha = KeycloakInstance();
+      final serviceBeta = KeycloakInstance.parameters({
+        "realm": "demo",
+        "authServerUrl": "http://localhost:8080/auth",
+        "clientId": "test_beta"
+      });
 
-    //   await Future.wait([serviceAlpha.init(), serviceBeta.init()]);
+      await Future.wait([
+        serviceAlpha.init(KeycloakInitOptions()),
+        serviceBeta.init(KeycloakInitOptions())
+      ]);
 
-    //   expect(serviceAlpha.realm, 'demo');
-    //   expect(serviceBeta.realm, 'demo');
-    //   expect(serviceAlpha.clientId, 'angulardart_alpha');
-    //   expect(serviceBeta.clientId, 'angulardart_beta');
-    // });
+      expect(serviceAlpha.realm, 'demo');
+      expect(serviceBeta.realm, 'demo');
+      expect(serviceAlpha.clientId, 'test_alpha');
+      expect(serviceBeta.clientId, 'test_beta');
+    });
   });
 }

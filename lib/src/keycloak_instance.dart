@@ -1,3 +1,5 @@
+import 'dart:convert' show json;
+
 import 'js_interop/keycloak.dart' as js;
 import 'js_interop/promise.dart';
 
@@ -95,8 +97,12 @@ class KeycloakInstance {
 
   //TODO: There are a bunch of event functions not implemented
 
-  KeycloakInstance() {
-    _kc = js.Keycloak();
+  KeycloakInstance([config]) {
+    _kc = js.Keycloak(config);
+  }
+
+  KeycloakInstance.parameters(Map params) {
+    _kc = js.Keycloak(parse(json.encode(params)));
   }
 
   /// Called to initialize the adapter.
