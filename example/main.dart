@@ -172,7 +172,8 @@ void _displayAuthenticatedInfo(KeycloakInstance keycloak, String header) {
     <strong>idToken:</strong> ${_ellipsi(keycloak.idToken)} <br>
     <strong>token:</strong> ${_ellipsi(keycloak.token)} <br>
     <strong>refreshToken:</strong> ${_ellipsi(keycloak.refreshToken)} <br>
-    <strong>roles:</strong> ${keycloak.realmAccess.roles} <br>
+    <strong>realm roles:</strong> ${keycloak.realmAccess.roles} <br>
+    <strong>resource access:</strong> ${keycloak.resourceAccess['test_alpha']?.roles} <br>
     ''';
 
   querySelector('#output').innerHtml = currentSituation;

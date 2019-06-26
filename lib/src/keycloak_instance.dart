@@ -1,11 +1,20 @@
 import 'dart:convert' show json;
 
-import 'package:js/js.dart';
+import 'package:js/js.dart' show allowInterop;
+import 'package:js/js_util.dart' show getProperty;
 
 import 'js_interop/keycloak.dart' as js;
 import 'js_interop/promise.dart';
 
 typedef void Func();
+
+class KeycloakResourceAccess {
+  final js.KeycloakResourceAccess jsObject;
+
+  KeycloakResourceAccess(this.jsObject);
+
+  js.KeycloakRoles operator [](String name) => getProperty(jsObject, name);
+}
 
 class KeycloakInstance {
   js.KeycloakInstance<Promise> _kc;
@@ -37,8 +46,10 @@ class KeycloakInstance {
   set realmAccess(js.KeycloakRoles v) => _kc.realmAccess = v;
 
   /// The resource roles associated with the token.
-  js.KeycloakResourceAccess get resourceAccess => _kc.resourceAccess;
-  set resourceAccess(js.KeycloakResourceAccess v) => _kc.resourceAccess = v;
+  KeycloakResourceAccess get resourceAccess =>
+      KeycloakResourceAccess(_kc.resourceAccess);
+  set resourceAccess(KeycloakResourceAccess v) =>
+      _kc.resourceAccess = v.jsObject;
 
   /// The base64 encoded token that can be sent in the Authorization header in
   /// requests to services.
