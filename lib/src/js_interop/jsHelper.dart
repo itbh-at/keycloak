@@ -1,5 +1,5 @@
 @JS()
-library js_promise;
+library js_helper;
 
 import 'dart:async' show Completer;
 

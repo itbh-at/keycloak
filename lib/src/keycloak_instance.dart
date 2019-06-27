@@ -4,19 +4,79 @@ import 'package:js/js.dart' show allowInterop;
 import 'package:js/js_util.dart' show getProperty;
 
 import 'js_interop/keycloak.dart' as js;
-import 'js_interop/promise.dart';
+import 'js_interop/jsHelper.dart';
 
+/// For callback function registration
 typedef void Func();
 
-class KeycloakResourceAccess {
-  final js.KeycloakResourceAccess jsObject;
-
-  KeycloakResourceAccess(this.jsObject);
-
-  js.KeycloakRoles operator [](String name) => getProperty(jsObject, name);
-}
-
+/// A wrapper for `KeyclockInstance` from the interop.
+/// It provides a more Dart friendly interface to replace bare JS interop methods.
+///
+/// It supports the original 3 flavours of constructing a `KeycloakInstance`.
+///
+/// ```'dart'
+/// // This will find the keycloak.json file in the root path
+/// final keycloak = KeycloakInstance();
+///
+/// // This will load the config file at the given path
+/// final keycloak = KeycloakInstance('other_keycloak.json');
+///
+/// // This will construct with the given map
+/// final keycloak = KeycloakInstance.parameters({
+///     "realm": "demo",
+///     "authServerUrl": "http://localhost:8080/auth",
+///     "clientId": "client"
+/// });
+/// ```
+///
+/// All [flows](https://www.keycloak.org/docs/latest/securing_apps/index.html#flows)
+/// are supported. For example, to initialize a Keycloak instance with
+/// implicit flow and login immediately:
+///
+/// ```'dart'
+/// try {
+///     final authenticated = await keycloak.init(KeycloakInitOptions(
+///         flow: 'implicit',
+///         onLoad: 'login-required'));
+///     if (authenticated) {
+///         _loadPage();
+///     }
+/// } on KeycloakError catch (e) {
+///     print('error $e');
+///     return;
+/// }
+/// ```
+/// There is one **restriction**: `KeycloakInitOptions.promiseType` must be
+/// `'native'` or leave blank. In order to have Dart's `Future` works for all API.
+///
+/// All promise based API are converted to Dart's `Future`.
+/// You can use the `Future.then()` too if you want:
+///
+/// ```'dart'
+/// keycloak.updateToken(55).then((success) {
+///     if (success) {
+///         print("Token Refreshed!");
+///     } else {
+///         print("Token hasn't expired!");
+///     }
+/// }).catchError((e) {
+///     if (e is KeycloakError) {
+///         _errorPage(e);
+///     }
+/// });
+/// ```
+///
+/// There are a few callback function one can listen to,
+/// simply assign a function to such setter. Example:
+///
+/// ```'dart'
+/// keycloak.onAuthSuccess = () => print('on auth success');
+/// ```
+///
+/// For the rest of the getter/setter, it just forward the calls.
+///
 class KeycloakInstance {
+  /// The real `KeycloakInstance` JavaScript Object
   js.KeycloakInstance<Promise> _kc;
 
   /// Is true if the user is authenticated, false otherwise.
@@ -136,10 +196,16 @@ class KeycloakInstance {
   /// obtain a new access token.
   set onTokenExpired(Func f) => _kc.onTokenExpired = allowInterop(f);
 
-  KeycloakInstance([config]) {
-    _kc = js.Keycloak(config);
+  /// Constructing an instance with an optional file path
+  ///
+  /// If `configFilePath` wasn't defined, It will search for 'keycloak.json' in the root.
+  KeycloakInstance([configFilePath]) {
+    _kc = js.Keycloak(configFilePath);
   }
 
+  /// Constructing an instance with key value pair.
+  /// It is akin to JavaScript Object definition but in fact is a Dart `Map`.
+  /// `params` will be convert from a `map` to a `Object`.
   KeycloakInstance.parameters(Map params) {
     _kc = js.Keycloak(parse(json.encode(params)));
   }
@@ -162,11 +228,9 @@ class KeycloakInstance {
   Future login([js.KeycloakLoginOptions options]) =>
       promiseToFuture(_kc.login(options));
 
-  //TODO: We need a Dart interop for this option
   /// Redirects to logout.
   Future logout([dynamic options]) => promiseToFuture(_kc.logout(options));
 
-  //TODO: We need a Dart interop for this option
   /// Redirects to registration form.
   /// set to `'register'`.
   Future register([dynamic options]) => promiseToFuture(_kc.register(options));
@@ -230,4 +294,18 @@ class KeycloakInstance {
 
   /// @private Undocumented.
   Future loadUserInfo() => promiseToFuture(_kc.loadUserInfo());
+}
+
+/// A wrapper for `KeycloakResourceAccess` from the interop.
+///
+/// Index signature is not yet supported by JavaScript interop.
+/// So, to keep using the same API of `KeycloakResrouceAccess['client']`,
+/// we have to wrap it with a dart class and use `getProperty`
+///
+class KeycloakResourceAccess {
+  final js.KeycloakResourceAccess jsObject;
+
+  KeycloakResourceAccess(this.jsObject);
+
+  js.KeycloakRoles operator [](String name) => getProperty(jsObject, name);
 }

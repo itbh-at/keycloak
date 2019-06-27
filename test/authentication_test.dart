@@ -6,42 +6,42 @@ import 'package:keycloak_dart/keycloak.dart';
 void main() {
   group('Initialization.', () {
     test('Create keycloak instance by config file', () async {
-      final client = KeycloakInstance('keycloak.json');
-      await client.init(KeycloakInitOptions());
+      final keycloak = KeycloakInstance('keycloak.json');
+      await keycloak.init(KeycloakInitOptions());
 
-      expect(client.realm, 'demo');
-      expect(client.clientId, 'test_alpha');
+      expect(keycloak.realm, 'demo');
+      expect(keycloak.clientId, 'test_alpha');
     });
 
     test('Create keycloak instance by parameters', () async {
-      final service = KeycloakInstance.parameters({
+      final keycloak = KeycloakInstance.parameters({
         "realm": "demo",
         "authServerUrl": "http://localhost:8080/auth",
         "clientId": "test_beta"
       });
-      await service.init(KeycloakInitOptions());
+      await keycloak.init(KeycloakInitOptions());
 
-      expect(service.realm, 'demo');
-      expect(service.clientId, 'test_beta');
+      expect(keycloak.realm, 'demo');
+      expect(keycloak.clientId, 'test_beta');
     });
 
     test('Create 2 separated instances', () async {
-      final serviceAlpha = KeycloakInstance();
-      final serviceBeta = KeycloakInstance.parameters({
+      final keycloakAlpha = KeycloakInstance();
+      final keycloakBeta = KeycloakInstance.parameters({
         "realm": "demo",
         "authServerUrl": "http://localhost:8080/auth",
         "clientId": "test_beta"
       });
 
       await Future.wait([
-        serviceAlpha.init(KeycloakInitOptions()),
-        serviceBeta.init(KeycloakInitOptions())
+        keycloakAlpha.init(KeycloakInitOptions()),
+        keycloakBeta.init(KeycloakInitOptions())
       ]);
 
-      expect(serviceAlpha.realm, 'demo');
-      expect(serviceBeta.realm, 'demo');
-      expect(serviceAlpha.clientId, 'test_alpha');
-      expect(serviceBeta.clientId, 'test_beta');
+      expect(keycloakAlpha.realm, 'demo');
+      expect(keycloakBeta.realm, 'demo');
+      expect(keycloakAlpha.clientId, 'test_alpha');
+      expect(keycloakBeta.clientId, 'test_beta');
     });
   });
 }

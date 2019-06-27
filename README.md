@@ -10,13 +10,13 @@ It supports the original 3 flavours of constructing a `KeycloakInstance`.
 
 ```'dart'
 // This will find the keycloak.json file in the root path
-final kc = KeycloakInstance();
+final keycloak = KeycloakInstance();
 
 // This will load the config file at the given path
-final kc = KeycloakInstance('other_keycloak.json');
+final keycloak = KeycloakInstance('other_keycloak.json');
 
 // This will construct with the given map
-final kc = KeycloakInstance.parameters({
+final keycloak = KeycloakInstance.parameters({
     "realm": "demo",
     "authServerUrl": "http://localhost:8080/auth",
     "clientId": "client"
@@ -29,7 +29,7 @@ All [flows](https://www.keycloak.org/docs/latest/securing_apps/index.html#flows)
 
 ```'dart'
 try {
-    final authenticated = await kc.init(KeycloakInitOptions(
+    final authenticated = await keycloak.init(KeycloakInitOptions(
         flow: 'implicit',
         onLoad: 'login-required'));
     if (authenticated) {
@@ -48,7 +48,7 @@ There is one **restriction**: `KeycloakInitOptions.promiseType` must be `'native
 As demonstrated above, all `KeycloakInstance` promise based API are converted to Dart's `Future`. You can use the `Future.then()` too if you want:
 
 ```'dart'
-kc.updateToken(55).then((success) {
+keycloak.updateToken(55).then((success) {
     if (success) {
         print("Token Refreshed!");
     } else {
@@ -66,7 +66,7 @@ kc.updateToken(55).then((success) {
 There are a few callback function one can listen to, simply assign a function to such setter. Example:
 
 ```'dart'
-kc.onAuthSuccess = () => print('on auth success');
+keycloak.onAuthSuccess = () => print('on auth success');
 ```
 
 ## Development
