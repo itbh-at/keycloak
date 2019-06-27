@@ -141,6 +141,8 @@ Example are a web page demonstrating most of the functionality you can do with t
 - A 'demo' realm setup.
 - A 'test_alpha' client.
 
+You can run with your own configuration, just make sure you replace the `keycloak.json` in the `example/` folder.
+
 #### Serve the example
 
 Run it with `webdev serve example:2700`. and visit `http://localhost:2700`.
