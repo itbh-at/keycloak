@@ -35,9 +35,8 @@ try {
     if (authenticated) {
         _loadPage();
     }
-} on KeycloakError catch (e) {
-    print('error $e');
-    return;
+} on catch (e) {
+    _handleError(e);
 }
 ```
 
@@ -55,9 +54,7 @@ keycloak.updateToken(55).then((success) {
         print("Token hasn't expired!");
     }
 }).catchError((e) {
-    if (e is KeycloakError) {
-        _errorPage(e);
-    }
+    _handleError(e);
 });
 ```
 
@@ -67,6 +64,24 @@ There are a few callback function one can listen to, simply assign a function to
 
 ```'dart'
 keycloak.onAuthSuccess = () => print('on auth success');
+```
+
+### Handling Exceptions
+
+Not all exception thrown by keycloak JS adapter is a valid `KeycloakError`. It does threw empty exception for some methods. In Dart, it will became a `NullThrownError`.
+
+We can first try to cast the error to `KeycloakError` and see if we can display meaningful error message. If it doesn't, we just display the generic error message. Nonetheless, there is an exception thrown and we should handle the situation.
+
+```'dart'
+try {
+    final profile = await keycloak.loadUserProfile();
+    _displayProfile(profile);
+} catch (e) {
+    final errorMessage = e is KeycloakError
+      ? e.error
+      : e?.toString() ?? 'Unknown Error';
+    print(errorMessage);
+}
 ```
 
 ## Development

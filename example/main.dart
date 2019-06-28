@@ -29,8 +29,8 @@ void _startUp([String flow]) async {
   try {
     autenticated = await keycloak.init(KeycloakInitOptions(
         flow: flow, onLoad: loginRequired ? 'login-required' : ''));
-  } on KeycloakError catch (e) {
-    _errorPage(e);
+  } catch (e) {
+    _errorPage(e, 'Initializing Keycloak');
     return;
   }
 
@@ -97,8 +97,8 @@ void _userSection(KeycloakInstance keycloak) {
     ''';
 
       querySelector('#profile').innerHtml = profileText;
-    } on KeycloakError catch (e) {
-      _errorPage(e);
+    } catch (e) {
+      _errorPage(e, 'Load User Profile');
       return;
     }
   });
@@ -121,9 +121,7 @@ void _userSection(KeycloakInstance keycloak) {
             keycloak, "${keycloak.flow} Flow: Token hasn't expired!");
       }
     }).catchError((e) {
-      if (e is KeycloakError) {
-        _errorPage(e);
-      }
+      _errorPage(e, 'Update Token');
     });
   });
 
@@ -209,8 +207,14 @@ void _highlightFlow(String flowName) {
   activeAnchor.className = 'activeLink';
 }
 
-void _errorPage(KeycloakError error) {
-  querySelector('#error').text = 'Keycloack Error: ${error.error}';
+void _errorPage(error, [String additionalInfo]) {
+  // Not all exception thrown by keycloak JS adapter is a valid `KeycloakError`.
+  // It does threw empty exception for some methods.
+  // In Dart, it will became a `NullThrownError`
+  final errorMessage = error is KeycloakError
+      ? error.error
+      : error?.toString() ?? 'Unknown Error';
+  querySelector('#error').text = 'Error: $errorMessage. $additionalInfo';
 }
 
 String _ellipsi(String s) {
