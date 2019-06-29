@@ -119,9 +119,9 @@ Here are the repair instructions:
    @JS()
    ```
 
-3. It mistakenly made all the JavaScript callback functions into a Dart function. To fix them, convert all callback functions to a set function. Starting from ln 421:
+3. It mistakenly made all the JavaScript callback functions into a Dart function. To fix them, convert all callback functions to a set function.
 
-   All these functions need to be replace: (commented out the replaced generated codes)
+   All these functions need to be replace, starting from ln 421: (commented out the replaced generated codes)
 
    ```'dart
    //external void onReady([bool authenticated]);
@@ -144,6 +144,32 @@ Here are the repair instructions:
 
    //external void onTokenExpired();
    external set onTokenExpired(dynamic func);
+   ```
+
+4. `KeycloakTokenParsed` is using outdated types. This is not a code generator issue but an outdated TypeScript definition [issue](https://issues.jboss.org/browse/KEYCLOAK-10745). [PR](https://github.com/keycloak/keycloak/pull/6132) to fix it is active here. This repair is no longer needed once the fix it in.
+
+   Replace the type of `realm_access` and `resources_access` to the responding class respectively: (commented out the replaced generated codes)
+
+   ln 278
+
+   ```'dart'
+   // external dynamic /*{ roles: string[] }*/ get realm_access;
+   // external set realm_access(dynamic /*{ roles: string[] }*/ v);
+   // external List<String> get resource_access;
+   // external set resource_access(List<String> v);
+   external KeycloakRoles get realm_access;
+   external set realm_access(KeycloakRoles v);
+   external KeycloakResourceAccess get resource_access;
+   external set resource_access(KeycloakResourceAccess v);
+   ```
+
+   ln 288
+
+   ```'dart'
+   //dynamic /*{ roles: string[] }*/ realm_access,
+   //List<String> resource_access});
+   KeycloakRoles realm_access,
+   KeycloakResourceAccess resource_access});
    ```
 
 ### Running the example

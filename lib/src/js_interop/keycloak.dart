@@ -275,18 +275,18 @@ abstract class KeycloakTokenParsed {
   external set sub(String v);
   external String get session_state;
   external set session_state(String v);
-  external dynamic /*{ roles: string[] }*/ get realm_access;
-  external set realm_access(dynamic /*{ roles: string[] }*/ v);
-  external List<String> get resource_access;
-  external set resource_access(List<String> v);
+  external KeycloakRoles get realm_access;
+  external set realm_access(KeycloakRoles v);
+  external KeycloakResourceAccess get resource_access;
+  external set resource_access(KeycloakResourceAccess v);
   external factory KeycloakTokenParsed(
       {num exp,
       num iat,
       String nonce,
       String sub,
       String session_state,
-      dynamic /*{ roles: string[] }*/ realm_access,
-      List<String> resource_access});
+      KeycloakRoles realm_access,
+      KeycloakResourceAccess resource_access});
 }
 
 @anonymous

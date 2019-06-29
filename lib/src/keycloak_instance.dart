@@ -117,8 +117,8 @@ class KeycloakInstance {
   set token(String v) => _kc.token = v;
 
   /// The parsed token as a JavaScript object.
-  js.KeycloakTokenParsed get tokenParsed => _kc.tokenParsed;
-  set tokenParsed(js.KeycloakTokenParsed v) => _kc.tokenParsed = v;
+  KeycloakTokenParsed get tokenParsed => KeycloakTokenParsed(_kc.tokenParsed);
+  set tokenParsed(KeycloakTokenParsed v) => _kc.tokenParsed = v.jsObject;
 
   /// The base64 encoded refresh token that can be used to retrieve a new token.
   String get refreshToken => _kc.refreshToken;
@@ -308,4 +308,31 @@ class KeycloakResourceAccess {
   KeycloakResourceAccess(this.jsObject);
 
   js.KeycloakRoles operator [](String name) => getProperty(jsObject, name);
+}
+
+/// A wrapper for `KeycloakTokenParsed` from the interop.
+///
+/// It involved returning a `KeycloakResourceAccess`, which require a special handling.
+///
+class KeycloakTokenParsed {
+  final js.KeycloakTokenParsed jsObject;
+
+  num get exp => jsObject.exp;
+  set exp(num v) => jsObject.exp = v;
+  num get iat => jsObject.iat;
+  set iat(num v) => jsObject.iat = v;
+  String get nonce => jsObject.nonce;
+  set nonce(String v) => jsObject.nonce = v;
+  String get sub => jsObject.sub;
+  set sub(String v) => jsObject.sub = v;
+  String get session_state => jsObject.session_state;
+  set session_state(String v) => jsObject.session_state = v;
+  js.KeycloakRoles get realm_access => jsObject.realm_access;
+  set realm_access(js.KeycloakRoles v) => jsObject.realm_access = v;
+  KeycloakResourceAccess get resource_access =>
+      KeycloakResourceAccess(jsObject.resource_access);
+  set resource_access(KeycloakResourceAccess v) =>
+      jsObject.resource_access = v.jsObject;
+
+  KeycloakTokenParsed(this.jsObject);
 }

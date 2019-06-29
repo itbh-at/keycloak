@@ -146,6 +146,10 @@ void _displayAuthenticatedInfo(KeycloakInstance keycloak, String header) {
     <strong>refreshToken:</strong> ${_ellipsi(keycloak.refreshToken)} <br>
     <strong>realm roles:</strong> ${keycloak.realmAccess.roles} <br>
     <strong>resource access:</strong> ${keycloak.resourceAccess[keycloak.clientId]?.roles} <br>
+    <h4>From Parsed Token</h4>
+    <strong>session state:</strong> ${keycloak.tokenParsed.session_state} <br>
+    <strong>realm roles:</strong> ${keycloak.tokenParsed.realm_access.roles} <br>
+    <strong>resources roles:</strong> ${keycloak.tokenParsed.resource_access[keycloak.clientId]?.roles} <br>
     ''';
 
   querySelector('#output').innerHtml = currentSituation;
