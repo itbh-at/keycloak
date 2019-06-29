@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="scaffolded-by" content="https://github.com/google/stagehand" />
+    <title>Keycloak Example</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="favicon.ico" />
+
+    <script src="http://localhost:8080/auth/js/keycloak.js"></script>
+
+    <script defer src="main.dart.js"></script>
+  </head>
+
+  <body>
+    <nav>
+      <a id="standard" class="flowLink" href="#standard">Standard</a>
+      <a id="implicit" class="flowLink" href="#implicit">Implicit</a>
+      <a id="hybrid" class="flowLink" href="#hybrid">Hybrid</a>
+      <input type="checkbox" id="login-required" />Auto Login
+    </nav>
+    <div id="main">
+      <div id="output"></div>
+
+      <div id="actions">
+        <button type="button" id="button1"></button>
+        <button type="button" id="button2"></button>
+        <button type="button" id="button3"></button>
+      </div>
+
+      <div id="profile"></div>
+
+      <h5 id="error" style="color:red;"></h5>
+    </div>
+  </body>
+</html>
