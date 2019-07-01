@@ -1,4 +1,4 @@
-name: keycloak_dart
+name: keycloak
 description: A dart wrapper for keycloak.js
 version: 0.1.0
 
