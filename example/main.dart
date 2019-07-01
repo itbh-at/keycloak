@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:keycloak_dart/keycloak.dart';
+import 'package:keycloak/keycloak.dart';
 
 /// A global flag to determine should we use 'login-required' when initializing Keycloak
 bool loginRequired = true;

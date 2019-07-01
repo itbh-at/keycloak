@@ -1,7 +1,7 @@
 @TestOn("browser")
 import 'package:test/test.dart';
 
-import 'package:keycloak_dart/keycloak.dart';
+import 'package:keycloak/keycloak.dart';
 
 void main() {
   group('Initialization.', () {
